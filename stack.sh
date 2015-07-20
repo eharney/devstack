@@ -695,7 +695,7 @@ source $TOP_DIR/tools/install_prereqs.sh
 
 # Configure an appropriate Python environment
 if [[ "$OFFLINE" != "True" ]]; then
-    PYPI_ALTERNATIVE_URL=${PYPI_ALTERNATIVE_URL:-""} $TOP_DIR/tools/install_pip.sh
+    true
 fi
 
 TRACK_DEPENDS=${TRACK_DEPENDS:-False}

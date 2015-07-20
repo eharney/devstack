@@ -78,29 +78,6 @@ function get_package_path {
 }
 
 
-# Pre-install affected packages so we can fix the permissions
-# These can go away once we are confident that pip 1.4.1+ is available everywhere
-
-# Fix prettytable 0.7.2 permissions
-# Don't specify --upgrade so we use the existing package if present
-pip_install 'prettytable>=0.7'
-PACKAGE_DIR=$(get_package_path prettytable)
-# Only fix version 0.7.2
-dir=$(echo $PACKAGE_DIR/prettytable-0.7.2*)
-if [[ -d $dir ]]; then
-    sudo chmod +r $dir/*
-fi
-
-# Fix httplib2 0.8 permissions
-# Don't specify --upgrade so we use the existing package if present
-pip_install httplib2
-PACKAGE_DIR=$(get_package_path httplib2)
-# Only fix version 0.8
-dir=$(echo $PACKAGE_DIR-0.8*)
-if [[ -d $dir ]]; then
-    sudo chmod +r $dir/*
-fi
-
 if is_fedora; then
     # Disable selinux to avoid configuring to allow Apache access
     # to Horizon files (LP#1175444)
@@ -161,8 +138,3 @@ if is_fedora; then
     fi
 fi
 
-# The version of pip(1.5.4) supported by python-virtualenv(1.11.4) has
-# connection issues under proxy, hence uninstalling python-virtualenv package
-# and installing the latest version using pip.
-uninstall_package python-virtualenv
-pip_install -U virtualenv
