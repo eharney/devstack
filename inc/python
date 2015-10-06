@@ -176,7 +176,7 @@ function setup_package_with_constraints_edit {
             "$flags file://$project_dir#egg=$name"
     fi
 
-    setup_package $project_dir $flags
+    setup_package_real $project_dir $flags
 
 }
 
@@ -184,11 +184,11 @@ function setup_package_with_constraints_edit {
 # using pip before running `setup.py develop`
 # Uses globals ``STACK_USER``
 # setup_develop_no_requirements_update directory
-function setup_package {
+function setup_package_real {
     local project_dir=$1
     local flags=$2
 
-    pip_install $flags $project_dir
+    pip_install_real $flags $project_dir
     # ensure that further actions can do things like setup.py sdist
     if [[ "$flags" == "-e" ]]; then
         safe_chown -R $STACK_USER $1/*.egg-info
