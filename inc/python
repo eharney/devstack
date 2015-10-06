@@ -68,6 +68,79 @@ function pip_install {
     echo "Not running pip!"
 }
 
+# Wrapper for ``pip install`` to set cache and proxy environment variables
+# Uses globals ``OFFLINE``, ``PIP_VIRTUAL_ENV``,
+# ``PIP_UPGRADE``, ``TRACK_DEPENDS``, ``*_proxy``,
+# pip_install package [package ...]
+function pip_install_real {
+    local xtrace=$(set +o | grep xtrace)
+    set +o xtrace
+    local upgrade=""
+    local offline=${OFFLINE:-False}
+    if [[ "$offline" == "True" || -z "$@" ]]; then
+        $xtrace
+        return
+    fi
+
+    PIP_UPGRADE=$(trueorfalse False PIP_UPGRADE)
+    if [[ "$PIP_UPGRADE" = "True" ]] ; then
+        upgrade="--upgrade"
+    fi
+
+    if [[ -z "$os_PACKAGE" ]]; then
+        GetOSVersion
+    fi
+    if [[ $TRACK_DEPENDS = True && ! "$@" =~ virtualenv ]]; then
+        # TRACK_DEPENDS=True installation creates a circular dependency when
+        # we attempt to install virtualenv into a virualenv, so we must global
+        # that installation.
+        source $DEST/.venv/bin/activate
+        local cmd_pip=$DEST/.venv/bin/pip
+        local sudo_pip="env"
+    else
+        if [[ -n ${PIP_VIRTUAL_ENV:=} && -d ${PIP_VIRTUAL_ENV} ]]; then
+            local cmd_pip=$PIP_VIRTUAL_ENV/bin/pip
+            local sudo_pip="env"
+        else
+            local cmd_pip=$(get_pip_command)
+            local sudo_pip="sudo -H"
+        fi
+    fi
+
+    cmd_pip="$cmd_pip install"
+    # Always apply constraints
+    cmd_pip="$cmd_pip -c $REQUIREMENTS_DIR/upper-constraints.txt"
+
+    local pip_version=$(python -c "import pip; \
+                        print(pip.__version__.strip('.')[0])")
+    if (( pip_version<6 )); then
+        die $LINENO "Currently installed pip version ${pip_version} does not" \
+            "meet minimum requirements (>=6)."
+    fi
+
+    $xtrace
+    $sudo_pip \
+        http_proxy="${http_proxy:-}" \
+        https_proxy="${https_proxy:-}" \
+        no_proxy="${no_proxy:-}" \
+        PIP_FIND_LINKS=$PIP_FIND_LINKS \
+        $cmd_pip $upgrade \
+        $@
+
+    # Also install test requirements
+    local test_req="$@/test-requirements.txt"
+    if [[ -e "$test_req" ]]; then
+        echo "Installing test-requirements for $test_req"
+        $sudo_pip \
+            http_proxy=${http_proxy:-} \
+            https_proxy=${https_proxy:-} \
+            no_proxy=${no_proxy:-} \
+            PIP_FIND_LINKS=$PIP_FIND_LINKS \
+            $cmd_pip $upgrade \
+            -r $test_req
+    fi
+}
+
 # get version of a package from global requirements file
 # get_from_global_requirements <package>
 function get_from_global_requirements {
