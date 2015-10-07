@@ -109,7 +109,7 @@ function pip_install_real {
 
     cmd_pip="$cmd_pip install"
     # Always apply constraints
-    cmd_pip="$cmd_pip -c $REQUIREMENTS_DIR/upper-constraints.txt"
+    #cmd_pip="$cmd_pip -c $REQUIREMENTS_DIR/upper-constraints.txt"
 
     local pip_version=$(python -c "import pip; \
                         print(pip.__version__.strip('.')[0])")
