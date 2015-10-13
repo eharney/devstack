@@ -1,6 +1,7 @@
 # Add to your localrc.
 
-LIBS_FROM_GIT+=python-cinderclient,os-brick,python-openstackclient
-LIBS_FROM_GIT+=oslo_log,oslo_concurrency,oslo_db,futurist,oslo_serialization,oslo_messaging,oslo_config,oslo_context,oslo_vmware,oslo_serialization,oslo_i18n
-LIBS_FROM_GIT+=glance.store,glance_store,python-neutronclient,oslo_utils,python-novaclient
-LIBS_FROM_GIT+=pbr
+LIBS_FROM_GIT+=python-cinderclient,os-brick,python-openstackclient,
+LIBS_FROM_GIT+=oslo_log,oslo_concurrency,oslo_db,futurist,oslo_serialization,oslo_messaging,oslo_config,oslo_context,oslo_vmware,oslo_serialization,oslo_i18n,
+LIBS_FROM_GIT+=glance.store,glance_store,python-neutronclient,oslo_utils,python-novaclient,
+LIBS_FROM_GIT+=pbr,
+LIBS_FROM_GIT+=python-glanceclient,python-heatclient,python-saharaclient,os_client_config

@@ -125,6 +125,8 @@ function pip_install_real {
         no_proxy="${no_proxy:-}" \
         PIP_FIND_LINKS=$PIP_FIND_LINKS \
         $cmd_pip $upgrade \
+        --no-deps \
+        --disable-pip-version-check \
         $@
 
     # Also install test requirements

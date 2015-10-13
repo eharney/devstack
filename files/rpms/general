@@ -42,3 +42,6 @@ python-suds
 libvirt-python
 pyparsing
 python-wheel
+python2-PyMySQL
+python-appdirs
+python-zope-interface
